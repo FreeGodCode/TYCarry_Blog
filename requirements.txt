@@ -1,0 +1,5 @@
+Django==2.2.17
+django-simpleui==2020.9.26
+django-summernote==0.8.11.6
+pytz==2020.4
+sqlparse==0.4.1

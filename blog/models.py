@@ -1,7 +1,9 @@
 from django.db import models
+from django.urls import reverse
+from django.utils import timezone
 
-# Create your models here.
 from django.utils.timezone import now
+# Create your models here.
 
 
 # 用户
@@ -128,3 +130,94 @@ class Article(models.Model):
         verbose_name_plural = '文章列表'
         db_table = 'article'
         get_latest_by = 'created_time'
+
+
+# class MovieCategory(models.Model):
+#     """电影分类"""
+#     name = models.CharField(max_length=100, verbose_name='电影分类')
+#
+#     def __str__(self):
+#         return self.name
+#
+#     class Meta:
+#         db_table = 'db_movie_category'
+#         verbose_name = '电影分类'
+#         verbose_name_plural = '电影分类列表'
+#
+#
+# class MovieTag(models.Model):
+#     """电影标签"""
+#     name = models.CharField(max_length=100, verbose_name='标签名称', blank=True)
+#
+#     def __str__(self):
+#         return self.name
+#
+#     def get_absolute_url(self):
+#         return reverse('blog: movie_list', kwargs={'pk': self.pk})
+#
+#     class Meta:
+#         db_table = 'db_movie_tag'
+#         verbose_name = '电影标签名称'
+#         verbose_name_plural = '电影标签列表'
+#
+#
+# class Movie(models.Model):
+#     """电影"""
+#     name = models.CharField(max_length=100, verbose_name='电影名称')
+#     director = models.CharField(max_length=100, verbose_name='导演')
+#     actor = models.CharField(max_length=50, verbose_name='主演')
+#     category = models.ForeignKey(MovieCategory, on_delete=models.CASCADE, verbose_name='电影分类')
+#     tag = models.ForeignKey(MovieTag, on_delete=models.CASCADE, verbose_name='电影标签')
+#     cover = models.ImageField(upload_to='movies', blank=True, null=True, verbose_name='上传封面')
+#     score = models.DecimalField(max_digits=2, decimal_places=1, verbose_name='豆瓣评分')
+#     release_time = models.DateField('上映时间')
+#     created_time = models.DateField(default=timezone.now, verbose_name='添加时间')
+#     length_time = models.PositiveIntegerField(default=0, verbose_name='电影时长')
+#     watch_time = models.DateField(default=timezone.now(), verbose_name='观看时间')
+#     pid = models.CharField(max_length=100, blank=True, null=True, verbose_name='文章id')
+#
+#     def __str__(self):
+#         return self.name
+#
+#     def get_absolute_url(self):
+#         return reverse('blog: article', kwargs={'pk': self.pid})
+#
+#     class Meta:
+#         db_table = 'db_movie'
+#         verbose_name = '电影'
+#         verbose_name_plural = '电影列表'
+#
+#
+# class Message(models.Model):
+#     """docstring"""
+#     name = models.CharField(max_length=100, verbose_name='留言')
+#     admin = models.ForeignKey(User, verbose_name='站长', on_delete=models.CASCADE, blank=True, null=True)
+#
+#     def get_absolute_url(self):
+#         return reverse('blog: messages')
+#
+#     def get_user(self):
+#         return self.admin
+#
+#     class Meta:
+#         db_table = 'db_messages'
+#         verbose_name = '网站留言'
+#         verbose_name_plural = verbose_name
+#
+#
+# class MeanList(models.Model):
+#     """菜单"""
+#     STATUS_CHOICES = (
+#         ('y', '显示'),
+#         ('n', '隐藏')
+#     )
+#     title = models.CharField(max_length=100, verbose_name='菜单名称')
+#     link = models.CharField(max_length=100, verbose_name='菜单链接', blank=True, null=True)
+#     icon = models.CharField(max_length=100, verbose_name='菜单图标', blank=True, null=True)
+#     status = models.CharField(max_length=1, verbose_name='显示状态', choices=STATUS_CHOICES, default='y')
+#
+#     class Meta:
+#         db_table = 'db_mean_list'
+#         verbose_name = '菜单栏'
+#         verbose_name_plural = verbose_name
+

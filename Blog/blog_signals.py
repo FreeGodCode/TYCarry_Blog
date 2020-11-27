@@ -1,0 +1,103 @@
+import logging
+
+import django
+from django.contrib.auth import user_logged_in, user_logged_out
+from django.core.mail import EmailMultiAlternatives
+from django.dispatch import receiver
+
+from Blog import settings
+from Blog.utils import get_current_site, delete_sidebar_cache
+
+logger = logging.getLogger(__name__)
+
+oauth_user_login_signal = django.dispath.Signal(providing_args=['id'])
+send_email_signal = django.dispatch.Signal(providing_args=['emailto', 'title', 'content'])
+
+@receiver(send_email_signal)
+def send_email_signal_handler(sender, **kwargs):
+    emailto = kwargs['emailto']
+    title = kwargs['title']
+    content = kwargs['content']
+    msg = EmailMultiAlternatives(title, content, from_email=settings.DEFAULT_FROM_EMAIL, to=emailto)
+    msg.content_subtype = 'html'
+
+    # from servermanager.models import EmailSendLog
+    log = EmailSendLog()
+    log.title = title
+    log.content = content
+    log.emailto = ','.join(emailto)
+
+    try:
+        result = msg.send()
+        log.send_result = result > 0
+    except Exception as e:
+        logger.error(e)
+        log.send_result = False
+    log.save()
+
+@receiver(oauth_user_login_signal)
+def oauth_user_login_signal_handler(sender, **kwargs):
+    """docstring"""
+    id = kwargs['id']
+    oauthuser = OAuthUser.objects.get(id=id)
+    site = get_current_site().domain
+    if oauthuser.picture and not oauthuser.picture.find(site) >= 0:
+        from Blog.utils import  save_user_avatar
+        oauthuser.picture = save_user_avatar(oauthuser.picture)
+        oauthuser.save()
+
+    delete_sidebar_cache(oauthuser.author.username)
+
+    cache.clear()
+
+
+@receiver(post_save)
+def model_post_save_callback(sender, instance, created, rew, using, update_fields, **kwargs):
+    """
+    :param sender:
+    :param instance:
+    :param created:
+    :param rew:
+    :param using:
+    :param update_fields:
+    :param kwargs:
+    :return:
+    """
+    clearcache = False
+    if isinstance(instance, LogEntry):
+        return
+    if 'get_full_url' in dir(instance):
+        is_update_views = update_fields == {'views'}
+        if not settings.TESTING and not is_update_views:
+            try:
+                notify_url = instance.get_full_url()
+                SpiderNotify.baidu_notify([notify_url])
+            except Exception as e:
+                logger.error('notify sipder', e)
+        if not is_update_views:
+            clearcache = True
+    if isinstance(instance, Comment):
+        path = instance.article.get_absolute_url()
+        site = get_current_site().domain
+        if site.find(':') > 0:
+            site = site[0:site.find(':')]
+
+        expire_view_cache(path, servername=site, serverport=80, key_prefix='blogdetail')
+        if cache.get('seo_processor'):
+            cache.delete('seo_processor')
+        comment_cache_key = 'article_comments_{id}'.format(id=instance.article.id)
+        cache.delete(comment_cache_key)
+        delete_sidebar_cache('article_comments', [str(instance.article.pk)])
+        _thread.start_new(send_comment_email, (instance, ))
+
+    if clearcache:
+        cache.clear()
+
+
+@receiver(user_logged_in)
+@receiver(user_logged_out)
+def user_auth_callback(sender, request, user, **kwargs):
+    if user and user.username:
+        logger.info(user)
+        delete_sidebar_cache(user.username)
+        cache.clear()

@@ -1,7 +1,9 @@
 # encoding: utf-8
 import logging
 
-from haystack.backends import BaseSearchBackend
+from django.utils.encoding import force_text
+from haystack.backends import BaseSearchBackend, log_query, BaseSearchQuery, BaseEngine
+from haystack.models import SearchResult
 
 from blog.models import Article
 
@@ -11,6 +13,7 @@ class ElasticSearchBackend(BaseSearchBackend):
     """es search engine backend"""
     def __init__(self, connection_alias, **connection_options):
         super(ElasticSearchBackend, self).__init__(connection_alias, **connection_options)
+        self.manager = ArticleDocumentManager()
         try:
             self.__rebuild(None)
         except:

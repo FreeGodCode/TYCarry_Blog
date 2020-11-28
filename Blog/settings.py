@@ -275,24 +275,24 @@ CACHES = {
 
 # logging settings
 # 配置日志输出到本地文件
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'file': {
-#             'level': 'DEBUG',
-#             'class': 'logging.FileHandler',
-#             'filename': os.path.join(BASE_DIR, 'logging.log'),
-#         }
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['file'],
-#             'level': 'DEBUG',
-#             'propagate': True,
-#         }
-#     }
-# }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logging.log'),
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        }
+    }
+}
 
 # 日志信息输出到终端显示
 # LOGGING = {
@@ -312,73 +312,73 @@ CACHES = {
 # }
 
 
-LOGGING_CONFIG = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    # 格式化器
-    'formatters': {
-        'verbose': {
-            'format': '{leavename} {asctime} {module} {process: d} {thread: d} {message}',
-            # 'format': '[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d %(module)s] %(message)s',
-            'style': {},
-        },
-        'simple': {
-            'format': '{levelname} {message}',
-            'style': {},
-        }
-    },
-    # 过滤器
-    'filters':{
-        'special': {
-            '()': 'project.logging.SpecialFilter',
-            'foo': 'bar',
-        },
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        },
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse',
-        },
-    },
-    # 处理器
-    'handlers': {
-        'log_file': {
-            'level': 'INFO',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': 'logging.log',
-            'maxBytes': 16777216, #16M
-            'formatter': 'verbose',
-        },
-        'console': {
-            'level': 'INFO',
-            'filters': ['require_debug_true'],
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-        'mail_admins': {
-            'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler',
-            'filters': ['special'],
-        },
-    },
-    # 日志
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'propagate': True,
-        },
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': False,
-        },
-        'myproject.custom': {
-            'handlers': ['console', 'mail_admins'],
-            'level': 'INFO',
-            'filters': ['special'],
-        }
-    }
-}
+# LOGGING_CONFIG = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     # 格式化器
+#     'formatters': {
+#         'verbose': {
+#             'format': '{leavename} {asctime} {module} {process: d} {thread: d} {message}',
+#             # 'format': '[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d %(module)s] %(message)s',
+#             'style': {},
+#         },
+#         'simple': {
+#             'format': '{levelname} {message}',
+#             'style': {},
+#         }
+#     },
+#     # 过滤器
+#     'filters':{
+#         'special': {
+#             '()': 'project.logging.SpecialFilter',
+#             'foo': 'bar',
+#         },
+#         'require_debug_true': {
+#             '()': 'django.utils.log.RequireDebugTrue',
+#         },
+#         'require_debug_false': {
+#             '()': 'django.utils.log.RequireDebugFalse',
+#         },
+#     },
+#     # 处理器
+#     'handlers': {
+#         'log_file': {
+#             'level': 'INFO',
+#             'class': 'logging.handlers.RotatingFileHandler',
+#             'filename': 'logging.log',
+#             'maxBytes': 16777216, #16M
+#             'formatter': 'verbose',
+#         },
+#         'console': {
+#             'level': 'INFO',
+#             'filters': ['require_debug_true'],
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'simple',
+#         },
+#         'mail_admins': {
+#             'level': 'ERROR',
+#             'class': 'django.utils.log.AdminEmailHandler',
+#             'filters': ['special'],
+#         },
+#     },
+#     # 日志
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#             'propagate': True,
+#         },
+#         'django.request': {
+#             'handlers': ['mail_admins'],
+#             'level': 'ERROR',
+#             'propagate': False,
+#         },
+#         'myproject.custom': {
+#             'handlers': ['console', 'mail_admins'],
+#             'level': 'INFO',
+#             'filters': ['special'],
+#         }
+#     }
+# }
 
 # whoosh search settings
 HAYSTACK_CONNECTIONS = {
@@ -421,12 +421,11 @@ PAGINATE_BY = 10
 # http cache timeout
 CACHE_CONTROL_MAX_AGE = 2592000
 
-
-STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finder.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'compressor.finders.CompressorFinder',
-)
+# STATICFILES_FINDERS = (
+#     'django.contrib.staticfiles.finder.FileSystemFinder',
+#     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+#     'compressor.finders.CompressorFinder',
+# )
 # 压缩
 COMPRESS_ENABLED = True
 

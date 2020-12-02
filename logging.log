@@ -17,3 +17,62 @@ CREATE TABLE `django_site` (`id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY, `d
 (0.009) b"SELECT engine FROM information_schema.tables WHERE table_name = 'django_site'"; args=['django_site']
 (0.024) b'SHOW FULL TABLES'; args=None
 (0.407) b"INSERT INTO `django_migrations` (`app`, `name`, `applied`) VALUES ('sites', '0001_initial', '2020-11-27 17:28:00.535751')"; args=['sites', '0001_initial', '2020-11-27 17:28:00.535751']
+(0.030) b'SELECT @@SQL_AUTO_IS_NULL'; args=None
+(0.066) b'SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED'; args=None
+(1.821) b'SHOW FULL TABLES'; args=None
+(0.172) b'SELECT `django_migrations`.`app`, `django_migrations`.`name` FROM `django_migrations`'; args=()
+(0.001) b'SELECT @@SQL_AUTO_IS_NULL'; args=None
+(0.001) b'SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED'; args=None
+(0.030) b'SELECT @@sql_mode'; args=None
+(0.861) b'SHOW FULL TABLES'; args=None
+(0.085) b'SELECT `django_migrations`.`app`, `django_migrations`.`name` FROM `django_migrations`'; args=()
+(0.033) b'SHOW FULL TABLES'; args=None
+(0.001) b'SELECT `django_migrations`.`app`, `django_migrations`.`name` FROM `django_migrations`'; args=()
+(0.044) b'SHOW FULL TABLES'; args=None
+ALTER TABLE `django_site` ADD CONSTRAINT `django_site_domain_a2e37b91_uniq` UNIQUE (`domain`); (params ())
+(3.621) b'ALTER TABLE `django_site` ADD CONSTRAINT `django_site_domain_a2e37b91_uniq` UNIQUE (`domain`)'; args=()
+(0.201) b'SHOW FULL TABLES'; args=None
+(0.053) b"INSERT INTO `django_migrations` (`app`, `name`, `applied`) VALUES ('sites', '0002_alter_domain_unique', '2020-12-02 10:25:38.856326')"; args=['sites', '0002_alter_domain_unique', '2020-12-02 10:25:38.856326']
+(0.058) b'SHOW FULL TABLES'; args=None
+(0.001) b'SELECT `django_migrations`.`app`, `django_migrations`.`name` FROM `django_migrations`'; args=()
+(0.124) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE `django_content_type`.`app_label` = 'admin'"; args=('admin',)
+(0.004) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE (`django_content_type`.`app_label` = 'admin' AND `django_content_type`.`model` = 'logentry')"; args=('admin', 'logentry')
+(0.118) b'SELECT `auth_permission`.`content_type_id`, `auth_permission`.`codename` FROM `auth_permission` INNER JOIN `django_content_type` ON (`auth_permission`.`content_type_id` = `django_content_type`.`id`) WHERE `auth_permission`.`content_type_id` IN (1) ORDER BY `django_content_type`.`app_label` ASC, `django_content_type`.`model` ASC, `auth_permission`.`codename` ASC'; args=(1,)
+(0.001) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE `django_content_type`.`app_label` = 'admin'"; args=('admin',)
+(0.001) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE `django_content_type`.`app_label` = 'auth'"; args=('auth',)
+(0.001) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE (`django_content_type`.`app_label` = 'auth' AND `django_content_type`.`model` = 'permission')"; args=('auth', 'permission')
+(0.011) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE (`django_content_type`.`app_label` = 'auth' AND `django_content_type`.`model` = 'group')"; args=('auth', 'group')
+(0.001) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE (`django_content_type`.`app_label` = 'auth' AND `django_content_type`.`model` = 'user')"; args=('auth', 'user')
+(0.001) b'SELECT `auth_permission`.`content_type_id`, `auth_permission`.`codename` FROM `auth_permission` INNER JOIN `django_content_type` ON (`auth_permission`.`content_type_id` = `django_content_type`.`id`) WHERE `auth_permission`.`content_type_id` IN (2, 3, 4) ORDER BY `django_content_type`.`app_label` ASC, `django_content_type`.`model` ASC, `auth_permission`.`codename` ASC'; args=(2, 3, 4)
+(0.001) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE `django_content_type`.`app_label` = 'auth'"; args=('auth',)
+(0.001) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE `django_content_type`.`app_label` = 'contenttypes'"; args=('contenttypes',)
+(0.001) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE (`django_content_type`.`app_label` = 'contenttypes' AND `django_content_type`.`model` = 'contenttype')"; args=('contenttypes', 'contenttype')
+(0.008) b'SELECT `auth_permission`.`content_type_id`, `auth_permission`.`codename` FROM `auth_permission` INNER JOIN `django_content_type` ON (`auth_permission`.`content_type_id` = `django_content_type`.`id`) WHERE `auth_permission`.`content_type_id` IN (5) ORDER BY `django_content_type`.`app_label` ASC, `django_content_type`.`model` ASC, `auth_permission`.`codename` ASC'; args=(5,)
+(0.001) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE `django_content_type`.`app_label` = 'contenttypes'"; args=('contenttypes',)
+(0.001) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE `django_content_type`.`app_label` = 'sessions'"; args=('sessions',)
+(0.001) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE (`django_content_type`.`app_label` = 'sessions' AND `django_content_type`.`model` = 'session')"; args=('sessions', 'session')
+(0.001) b'SELECT `auth_permission`.`content_type_id`, `auth_permission`.`codename` FROM `auth_permission` INNER JOIN `django_content_type` ON (`auth_permission`.`content_type_id` = `django_content_type`.`id`) WHERE `auth_permission`.`content_type_id` IN (6) ORDER BY `django_content_type`.`app_label` ASC, `django_content_type`.`model` ASC, `auth_permission`.`codename` ASC'; args=(6,)
+(0.001) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE `django_content_type`.`app_label` = 'sessions'"; args=('sessions',)
+(0.001) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE `django_content_type`.`app_label` = 'sites'"; args=('sites',)
+(0.026) b"INSERT INTO `django_content_type` (`app_label`, `model`) VALUES ('sites', 'site')"; args=('sites', 'site')
+(0.001) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE (`django_content_type`.`app_label` = 'sites' AND `django_content_type`.`model` = 'site')"; args=('sites', 'site')
+(0.001) b'SELECT `auth_permission`.`content_type_id`, `auth_permission`.`codename` FROM `auth_permission` INNER JOIN `django_content_type` ON (`auth_permission`.`content_type_id` = `django_content_type`.`id`) WHERE `auth_permission`.`content_type_id` IN (13) ORDER BY `django_content_type`.`app_label` ASC, `django_content_type`.`model` ASC, `auth_permission`.`codename` ASC'; args=(13,)
+(0.029) b"INSERT INTO `auth_permission` (`name`, `content_type_id`, `codename`) VALUES ('Can add site', 13, 'add_site'), ('Can change site', 13, 'change_site'), ('Can delete site', 13, 'delete_site'), ('Can view site', 13, 'view_site')"; args=('Can add site', 13, 'add_site', 'Can change site', 13, 'change_site', 'Can delete site', 13, 'delete_site', 'Can view site', 13, 'view_site')
+(0.001) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE `django_content_type`.`app_label` = 'sites'"; args=('sites',)
+(0.001) b'SELECT (1) AS `a` FROM `django_site`  LIMIT 1'; args=()
+(0.037) b"UPDATE `django_site` SET `domain` = 'example.com', `name` = 'example.com' WHERE `django_site`.`id` = 1"; args=('example.com', 'example.com', 1)
+(0.028) b"INSERT INTO `django_site` (`id`, `domain`, `name`) VALUES (1, 'example.com', 'example.com')"; args=(1, 'example.com', 'example.com')
+(0.001) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE `django_content_type`.`app_label` = 'blog'"; args=('blog',)
+(0.001) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE (`django_content_type`.`app_label` = 'blog' AND `django_content_type`.`model` = 'articlecomment')"; args=('blog', 'articlecomment')
+(0.000) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE (`django_content_type`.`app_label` = 'blog' AND `django_content_type`.`model` = 'category')"; args=('blog', 'category')
+(0.000) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE (`django_content_type`.`app_label` = 'blog' AND `django_content_type`.`model` = 'tag')"; args=('blog', 'tag')
+(0.001) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE (`django_content_type`.`app_label` = 'blog' AND `django_content_type`.`model` = 'user')"; args=('blog', 'user')
+(0.000) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE (`django_content_type`.`app_label` = 'blog' AND `django_content_type`.`model` = 'article')"; args=('blog', 'article')
+(0.005) b'SELECT `auth_permission`.`content_type_id`, `auth_permission`.`codename` FROM `auth_permission` INNER JOIN `django_content_type` ON (`auth_permission`.`content_type_id` = `django_content_type`.`id`) WHERE `auth_permission`.`content_type_id` IN (8, 9, 10, 11, 12) ORDER BY `django_content_type`.`app_label` ASC, `django_content_type`.`model` ASC, `auth_permission`.`codename` ASC'; args=(8, 9, 10, 11, 12)
+(0.001) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE `django_content_type`.`app_label` = 'blog'"; args=('blog',)
+(0.001) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE `django_content_type`.`app_label` = 'django_summernote'"; args=('django_summernote',)
+(0.001) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE (`django_content_type`.`app_label` = 'django_summernote' AND `django_content_type`.`model` = 'attachment')"; args=('django_summernote', 'attachment')
+(0.001) b'SELECT `auth_permission`.`content_type_id`, `auth_permission`.`codename` FROM `auth_permission` INNER JOIN `django_content_type` ON (`auth_permission`.`content_type_id` = `django_content_type`.`id`) WHERE `auth_permission`.`content_type_id` IN (7) ORDER BY `django_content_type`.`app_label` ASC, `django_content_type`.`model` ASC, `auth_permission`.`codename` ASC'; args=(7,)
+(0.000) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE `django_content_type`.`app_label` = 'django_summernote'"; args=('django_summernote',)
+(0.001) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE `django_content_type`.`app_label` = 'haystack'"; args=('haystack',)
+(0.009) b"SELECT `django_content_type`.`id`, `django_content_type`.`app_label`, `django_content_type`.`model` FROM `django_content_type` WHERE `django_content_type`.`app_label` = 'haystack'"; args=('haystack',)

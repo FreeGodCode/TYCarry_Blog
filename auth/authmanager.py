@@ -361,6 +361,7 @@ class QQauthManager(BaseAuthManager):
                 return d['access_token']
             else:
                 raise AuthAccessTokenException(resp)
+
     def get_open_id(self):
         if self.is_access_token_set:
             params = {
@@ -368,10 +369,34 @@ class QQauthManager(BaseAuthManager):
             }
             resp = self.do_get(self.OPEN_ID_URL, params)
             if resp:
-                pass
-    def get_auth_userinfo(self):
-        pass
+                resp = resp.replace('callback(', '').replace(')', '').replace(';', '')
+                obj = json.loads(resp)
+                openid = str(obj['openid'])
+                self.openid = openid
+                return openid
 
+    def get_auth_userinfo(self):
+        openid = self.get_open_id()
+        if openid:
+            params = {
+                'access_token': self.access_token,
+                'auth_consumer_key': self.client_id,
+                'openid': self.openid,
+            }
+            resp = self.do_get(self.API_URL, params)
+            logger.info(resp)
+            obj = json.loads(resp)
+            user = AuthUser()
+            user.nickname = obj['nickname']
+            user.openid = openid
+            user.type = 'qq'
+            user.token = self.access_token
+            user.matedata = resp
+            if 'email' in obj:
+                user.email = obj['email']
+            if 'figureurl' in obj:
+                user.picture = str(obj['figureurl'])
+            return user
 
 @cache_decorator(expiration = 60 *60)
 def get_auth_apps():
@@ -379,7 +404,13 @@ def get_auth_apps():
 
     :return:
     """
-    pass
+    configs = AuthConfig.objects.filter(is_enable=True).all()
+    if not configs:
+        return []
+    configtypes = [x.type for x in configs]
+    applications = BaseAuthManager.__subclasses__()
+    apps = [x() for x in applications if x().ICON_NAME.lower() in configtypes]
+    return apps
 
 def get_manager_by_type(type):
     applications = get_auth_apps()

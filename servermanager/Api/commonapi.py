@@ -10,7 +10,7 @@ class Tuling():
         self.__key__ = ''
         self.__appid__ = ''
 
-    def __build_req_url(self, request):
+    def __build_req_url(self, content):
         return 'http://www.xxx.com/openapi/api?key=%s&info=%s&userid=%s' %(self.__key__, content, self.__appid__)
 
     def UserAgent(self, url):

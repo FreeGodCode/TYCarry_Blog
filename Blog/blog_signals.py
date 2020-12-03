@@ -7,10 +7,11 @@ from django.dispatch import receiver
 
 from Blog import settings
 from Blog.utils import get_current_site, delete_sidebar_cache
+from auth.models import AuthUser
 
 logger = logging.getLogger(__name__)
 
-oauth_user_login_signal = django.dispath.Signal(providing_args=['id'])
+auth_user_login_signal = django.dispath.Signal(providing_args=['id'])
 send_email_signal = django.dispatch.Signal(providing_args=['emailto', 'title', 'content'])
 
 @receiver(send_email_signal)
@@ -35,11 +36,11 @@ def send_email_signal_handler(sender, **kwargs):
         log.send_result = False
     log.save()
 
-@receiver(oauth_user_login_signal)
+@receiver(auth_user_login_signal)
 def oauth_user_login_signal_handler(sender, **kwargs):
     """docstring"""
     id = kwargs['id']
-    oauthuser = OAuthUser.objects.get(id=id)
+    oauthuser = AuthUser.objects.get(id=id)
     site = get_current_site().domain
     if oauthuser.picture and not oauthuser.picture.find(site) >= 0:
         from Blog.utils import  save_user_avatar

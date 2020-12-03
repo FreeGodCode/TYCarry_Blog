@@ -3,6 +3,7 @@ import os
 from hashlib import md5
 
 import requests
+from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
 

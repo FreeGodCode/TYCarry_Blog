@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'django_summernote', #后台富文本
     # 'tinymce', #tinymce富文本
     'haystack',
+    'comment',
 
 ]
 
@@ -130,16 +131,17 @@ WSGI_APPLICATION = 'Blog.wsgi.application'
 #         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 #     }
 # }
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': "Blog",
-        'USER': 'root',
-        'PASSWORD': '123456',
-        'HOST': 'localhost',
-        'PORT': '3306',
-    }
-}
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': "Blog",
+#         'USER': 'root',
+#         'PASSWORD': '123456',
+#         'HOST': 'localhost',
+#         'PORT': '3306',
+#     }
+# }
 
 DATABASES = {
     'default': {
@@ -152,6 +154,18 @@ DATABASES = {
         'OPTIONS': {
             'charset': 'utf8',
         },
+    },
+    # 从
+    'slaver': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ.get('DJANGO_MYSQL_DATABASE') or 'db_blog',
+        'USER': os.environ.get('DJANGO_MYSQL_USER') or 'root',
+        'PASSWORD': os.environ.get('DJANGO_MYSQL_PASSWORD') or '123456',
+        'HOST': os.environ.get('DJANGO_MYSQL_HOST') or '127.0.0.1',
+        'PORT': int(os.environ.get('DJANGO_MYSQL_PORT') or 3306),
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        }
     }
 }
 
@@ -211,7 +225,6 @@ USE_L10N = True
 USE_TZ = True
 # 在数据库中存储的时间仍然是UTC时间,但是显示的时候会按照实际的配置文件进行显示
 # USE_TZ = False
-
 
 
 # Static files (CSS, JavaScript, Images)

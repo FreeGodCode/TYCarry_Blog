@@ -1,5 +1,9 @@
+from ckeditor.widgets import CKEditorWidget
 from django import forms
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
+
+from comment.models import Comment
 
 
 class CommentForm(forms.Form):

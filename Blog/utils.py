@@ -1,5 +1,6 @@
 import logging
 import os
+import uuid
 from hashlib import md5
 
 import requests
@@ -8,6 +9,7 @@ from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
 
 logger = logging.getLogger(__name__)
+
 
 def get_max_articleid_commentid():
     from blog.models import Article
@@ -20,7 +22,8 @@ def get_md5(str):
     m = md5(str.encode('utf-8')).hexdigest()
     return m
 
-def cache_decorator(expiration = 3 * 60):
+
+def cache_decorator(expiration=3 * 60):
     def wrapper(func):
         def news(*args, **kwargs):
             try:
@@ -39,7 +42,7 @@ def cache_decorator(expiration = 3 * 60):
                 if str(value) == '__default_cache_value__':
                     return None
                 else:
-                    return view
+                    return value
             else:
                 logger.info('cache_decorator set cache:%s key: %s' % (func.__name__, key))
                 value = func(*args, **kwargs)
@@ -48,7 +51,9 @@ def cache_decorator(expiration = 3 * 60):
                 else:
                     cache.set(key, value, expiration)
                 return value
+
         return news
+
     return wrapper
 
 
@@ -120,23 +125,13 @@ class BlogMarkDownRenderer(mistune.Renderer):
     """markdown渲染"""
 
     def block_code(self, text, lang=None):
-        """
-        renderer has an options
-        :param text:
-        :param lang:
-        :return:
-        """
+        """renderer has an options"""
         inlinestyles = self.options.get('inlinestyles')
         linenos = self.options.get('linenos')
         return block_code(text, lang, inlinestyles, linenos)
 
     def autolink(self, link, is_email=False):
-        """
-
-        :param link:
-        :param is_email:
-        :return:
-        """
+        """"""
         text = link = escape(link)
         if is_email:
             link = 'mailto: %s' % link
@@ -147,13 +142,7 @@ class BlogMarkDownRenderer(mistune.Renderer):
         return '<a href="%s" %s> %s </a>' % (link, nofollow, text)
 
     def link(self, link, title, text):
-        """
-
-        :param link:
-        :param title:
-        :param text:
-        :return:
-        """
+        """"""
         link = escape_link(link)
         site = get_current_site()
         nofollow = "" if link.find(site.domain) > 0 else 'rel = "nofollow"'
@@ -167,36 +156,23 @@ class BlogMarkDownRenderer(mistune.Renderer):
 
 
 class CommonMarkdown():
-    """docstring"""
+    """"""
+
     @staticmethod
     def get_markdown(value):
-        """
-
-        :param value:
-        :return:
-        """
+        """"""
         render = BlogMarkDownRenderer(inlinestyles=False)
         mdp = mistune.Markdown(escape=True, render=render)
         return mdp(value)
 
 
 def send_mail(emailto, title, content):
-    """
-
-    :param emailto:
-    :param title:
-    :param content:
-    :return:
-    """
+    """"""
     send_email_signal.send(send_email.__class__, emailto=emailto, title=title, content=content)
 
 
 def parse_dict_to_url(dict):
-    """
-
-    :param dict:
-    :return:
-    """
+    """"""
     from urllib.parse import quote
     url = '&'.join(['{}={}'.format(quote(k, safe='/'), quote(v, safe='/')) for k, v in dict.items()])
     return url
@@ -207,8 +183,27 @@ def get_blog_setting():
     if value:
         return value
     else:
-        pass
-        # return value
+        from blog.models import BlogSettings
+        if not BlogSettings.objects.count():
+            setting = BlogSettings()
+            setting.sitename = 'DjangoBlog'
+            setting.site_description = 'basic django blog system'
+            setting.site_seo_description = 'basic django blog system'
+            setting.site_keywords = 'Django, Python'
+            setting.article_sub_length = 300
+            setting.sidebar_article_count = 10
+            setting.sidebar_comment_count = 5
+            setting.show_google_adsense = False
+            setting.open_site_comment = True
+            setting.analyticscode = ''
+            setting.beiancode = ''
+            setting.show_gongan_code = False
+            setting.save()
+        value = BlogSettings.objects.first()
+        logger.info('set cache get_blog_setting')
+        cache.set('get_blog_setting', value)
+        return value
+
 
 def save_user_avatar(url):
     """
@@ -223,7 +218,7 @@ def save_user_avatar(url):
         if imgname:
             path = r'{basedir}/avatar/{img}'.format(basedir=setting.resource_path, img=imgname)
             if os.path.exists(path):
-               os.remove(path)
+                os.remove(path)
     except BaseException:
         pass
 
@@ -241,7 +236,7 @@ def save_user_avatar(url):
             logger.info('保存用户头像:' + basepath + savefilename)
             with open(basepath + savefilename, 'wb+') as file:
                 file.write(resp.content)
-            return 'https://resource.lylinx.net/avatar/' +savefilename
+            return 'https://resource.lylinx.net/avatar/' + savefilename
 
     except Exception as e:
         logger.error(e)
@@ -249,10 +244,7 @@ def save_user_avatar(url):
 
 
 def delete_sidebar_cache(username):
-    """
-    :param username:
-    :return:
-    """
+    """"""
     keys = (make_template_fragment_key('sidebar', [username + x]) for x in LinkShowType.values)
 
     for k in keys:
@@ -261,14 +253,6 @@ def delete_sidebar_cache(username):
 
 
 def delete_view_cache(prefix, keys):
-    """
-    删除视图缓存
-    :param prefix:
-    :param keys:
-    :return:
-    """
+    """删除视图缓存"""
     key = make_template_fragment_key(prefix, keys)
     cache.delete(key)
-
-
-

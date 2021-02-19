@@ -221,3 +221,9 @@ class Article(models.Model):
 #         verbose_name = '菜单栏'
 #         verbose_name_plural = verbose_name
 
+class LinkShowType(models.TextChoices):
+    I = ('i', '首页')
+    L = ('l', '列表页')
+    P = ('p', '文章页面')
+    A = ('a', '全站')
+    S = ('s', '友情链接页面')

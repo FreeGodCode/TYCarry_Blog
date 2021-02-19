@@ -3,10 +3,17 @@ import os
 import uuid
 from hashlib import md5
 
+import mistune
+from mistune import escape, escape_link
+from pygments import highlight
+from pygments.lexers import get_lexer_by_name
+from pygments.formatters import html
 import requests
 from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
+
+from blog.models import LinkShowType
 
 logger = logging.getLogger(__name__)
 
@@ -91,12 +98,6 @@ def block_code(text, lang, inlinestyles=False, linenos=False):
     :return:
     """
 
-    import mistune
-    from mistune import escape, escape_link
-    from pygments import highligth
-    from pygments.lexers import get_lexer_by_name
-    from pygments.formatters import html
-
     if not lang:
         text = text.strip()
         return u'<pre><code>%s</code></pre>\n' % mistune.escape(text)
@@ -104,7 +105,7 @@ def block_code(text, lang, inlinestyles=False, linenos=False):
     try:
         lexer = get_lexer_by_name(lang, stripall=True)
         formatter = html.HtmlFormatter(noclassses=inlinestyles, linenos=linenos)
-        code = highligth(text, lexer, formatter)
+        code = highlight(text, lexer, formatter)
         if linenos:
             return '<div class="highlight">%s</div>\n' % code
         return code
@@ -132,7 +133,7 @@ class BlogMarkDownRenderer(mistune.Renderer):
 
     def autolink(self, link, is_email=False):
         """"""
-        text = link = escape(link)
+        text = link = mistune.escape(link)
         if is_email:
             link = 'mailto: %s' % link
         if not link:
@@ -143,7 +144,7 @@ class BlogMarkDownRenderer(mistune.Renderer):
 
     def link(self, link, title, text):
         """"""
-        link = escape_link(link)
+        link = mistune.escape_link(link)
         site = get_current_site()
         nofollow = "" if link.find(site.domain) > 0 else 'rel = "nofollow"'
         if not link:
@@ -151,7 +152,7 @@ class BlogMarkDownRenderer(mistune.Renderer):
         if not title:
             return "<a href='%s' %s>%s</a>" % (link, nofollow, text)
 
-        title = escape(title, quote=True)
+        title = mistune.escape(title, quote=True)
         return "<a href='%s' title='%s' %s>%s</a>" % (link, title, nofollow, text)
 
 
@@ -166,8 +167,9 @@ class CommonMarkdown():
         return mdp(value)
 
 
-def send_mail(emailto, title, content):
+def send_email(emailto, title, content):
     """"""
+    from Blog.blog_signals import send_email_signal
     send_email_signal.send(send_email.__class__, emailto=emailto, title=title, content=content)
 
 

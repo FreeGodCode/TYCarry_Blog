@@ -345,6 +345,52 @@ class Article(BaseModel):
         return Article.objects.filter(id__lt=self.id, status='p').first()
 
 
+class Category(BaseModel):
+    """文章分类"""
+    name = models.CharField(verbose_name='分类名', max_length=30, unique=True)
+    parent_category = models.ForeignKey('self', verbose_name='父级分类', null=True, blank=True, on_delete=models.CASCADE)
+    slug = models.SlugField(max_length=60, blank=True, default='no_slug')
+
+    class Meta:
+        db_table = 'db_category'
+        ordering = ['name']
+        verbose_name = '分类'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('blog:category_detail', kwargs={'category_name': self.slug})
+
+    def get_category_tree(self):
+        """递归获取分类目录的父级"""
+        categorys = []
+        def parse(category):
+            categorys.append(category)
+            if category.parent_category:
+                parse(category.parent_category)
+
+        parse(self)
+        return categorys
+
+    def get_sub_categorys(self):
+        """获取当前目录的所有子目录"""
+        catetorys = []
+        all_categorys = Category.objects.all()
+        def parse(category):
+            if category not in categorys:
+                categorys.append(category)
+            childs = all_categorys.filter(parent_category=category)
+            for child in childs:
+                if category not in categorys:
+                    categorys.append(child)
+                    parse(child)
+
+        psrse(self)
+        return categorys
+
+
 class Links(models.Model):
     """友情链接"""
     name = models.CharField(verbose_name='链接名称', max_length=30, unique=True)

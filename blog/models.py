@@ -65,33 +65,33 @@ class ArticleComment(models.Model):
 
 
 # 文章标签
-class Tag(models.Model):
-    # __tablename__ = "tag"
-    name = models.CharField(verbose_name='标签名', max_length=64)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        ordering = ['name']
-        verbose_name = "标签名称"
-        verbose_name_plural = "标签列表"
-        db_table = 'tag'
+# class Tag(models.Model):
+#     # __tablename__ = "tag"
+#     name = models.CharField(verbose_name='标签名', max_length=64)
+#
+#     def __str__(self):
+#         return self.name
+#
+#     class Meta:
+#         ordering = ['name']
+#         verbose_name = "标签名称"
+#         verbose_name_plural = "标签列表"
+#         db_table = 'tag'
 
 
 # 博客文章分类
-class Category(models.Model):
-    # __tablename__ = "category"
-    name = models.CharField(verbose_name="类别名称", max_length=64)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        ordering = ['name']
-        verbose_name = '类别名称'
-        verbose_name_plural = "类别列表"
-        db_table = 'category'
+# class Category(models.Model):
+#     # __tablename__ = "category"
+#     name = models.CharField(verbose_name="类别名称", max_length=64)
+#
+#     def __str__(self):
+#         return self.name
+#
+#     class Meta:
+#         ordering = ['name']
+#         verbose_name = '类别名称'
+#         verbose_name_plural = "类别列表"
+#         db_table = 'category'
 
 
 # 博客文章
@@ -389,6 +389,27 @@ class Category(BaseModel):
 
         psrse(self)
         return categorys
+
+
+class Tag(BaseModel):
+    """文章标签"""
+    name = models.CharField(verbose_name='标签名', max_length=30, unique=True)
+    slug = models.SlugField(default='no-slug', max_length=60, blank=True)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('blog:tag_detail', kwargs={'tag_name': self.slug})
+
+    def get_article_count(self):
+        return Article.objects.filter(tags__name=self.name).distince().count()
+
+    class Meta:
+        db_table = 'db_tag'
+        ordering = [name]
+        verbose_name = '标签'
+        verbose_name_plural = verbose_name
 
 
 class Links(models.Model):

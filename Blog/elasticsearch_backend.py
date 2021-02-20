@@ -1,16 +1,20 @@
-# encoding: utf-8
+# -*- encoding: utf-8 -*-
 import logging
 
+from django.db.models import Q
 from django.utils.encoding import force_text
 from haystack.backends import BaseSearchBackend, log_query, BaseSearchQuery, BaseEngine
 from haystack.models import SearchResult
 
+from blog.documents import ArticleDocumentManager, ArticleDocument
 from blog.models import Article
 
 logger = logging.getLogger(__name__)
 
+
 class ElasticSearchBackend(BaseSearchBackend):
     """es search engine backend"""
+
     def __init__(self, connection_alias, **connection_options):
         super(ElasticSearchBackend, self).__init__(connection_alias, **connection_options)
         self.manager = ArticleDocumentManager()
@@ -85,7 +89,6 @@ class ElasticSearchBackend(BaseSearchBackend):
         """
         self.remove(None)
 
-
     @log_query
     def search(self, query_string, **kwargs):
         """
@@ -97,7 +100,9 @@ class ElasticSearchBackend(BaseSearchBackend):
         start_offset = kwargs.get('start_offset')
         end_offset = kwargs.get('end_offset')
         q = Q('bool', should=[Q('match', body=query_string), Q('match', title=query_string)], minmum_should_match="70%")
-        search = ArticleDocument.search().query('bool', filter=[q]).filter('term', status='p').filter('term', type='a').source(False)[start_offset:  end_offset]
+        search = ArticleDocument.search().query('bool', filter=[q]).filter('term', status='p').filter('term',
+                                                                                                      type='a').source(
+            False)[start_offset:  end_offset]
 
         results = search.execute()
         hits = results['hits'].total
@@ -149,6 +154,7 @@ class ElasticSearchQuery(BaseSearchQuery):
     def get_count(self):
         results = self.get_results()
         return len(results) if results else 0
+
 
 class ElasticSearchEngine(BaseEngine):
     backend = ElasticSearchBackend

@@ -18,84 +18,52 @@ class ElasticSearchBackend(BaseSearchBackend):
     def __init__(self, connection_alias, **connection_options):
         super(ElasticSearchBackend, self).__init__(connection_alias, **connection_options)
         self.manager = ArticleDocumentManager()
-        try:
-            self.__rebuild(None)
-        except:
-            pass
+        # try:
+        #     self._rebuild(None)
+        # except:
+        #     pass
 
     def _get_models(self, iterable):
-        """
-        :param iterable:
-        :return:
-        """
+        """"""
         models = iterable if iterable else Article.objects.all()
         docs = self.manager.conver_to_doc(models)
         return docs
 
     def _create(self, models):
-        """
-        新建
-        :param models:
-        :return:
-        """
+        """新建"""
         self.manager.create_index()
         docs = self._get_models(models)
         self.manager.rebuild(docs)
 
     def _delete(self, models):
-        """
-        删除
-        :param models:
-        :return:
-        """
+        """删除"""
         for m in models:
             m.delete()
         return True
 
     def _rebuild(self, models):
-        """
-        重构
-        :param models:
-        :return:
-        """
+        """重构"""
         models = models if models else Article.objects.all()
         docs = self.manager.conver_to_doc(models)
         self.manager.update_docs(docs)
 
     def update(self, index, iterable, commit=True):
-        """
-        更新
-        :param index:
-        :param iterable:
-        :param commit:
-        :return:
-        """
+        """更新"""
         models = self._get_models(iterable)
         self.manager.update_docs(models)
 
     def remove(self, obj_or_string):
-        """
-        :param obj_or_string:
-        :return:
-        """
+        """"""
         models = self._get_models([obj_or_string])
         self._delete(models)
 
     def clear(self, models=None, commit=True):
-        """
-        :param models:
-        :param commit:
-        :return:
-        """
+        """"""
         self.remove(None)
 
     @log_query
     def search(self, query_string, **kwargs):
-        """
-        :param query_string:
-        :param kwargs:
-        :return:
-        """
+        """"""
         logger.info('search query_string:' + query_string)
         start_offset = kwargs.get('start_offset')
         end_offset = kwargs.get('end_offset')

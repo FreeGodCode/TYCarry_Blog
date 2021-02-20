@@ -13,7 +13,7 @@ from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
 
-from blog.models import LinkShowType
+# from blog.models import LinkShowType
 
 logger = logging.getLogger(__name__)
 
@@ -247,6 +247,7 @@ def save_user_avatar(url):
 
 def delete_sidebar_cache(username):
     """"""
+    from blog.models import LinkShowType
     keys = (make_template_fragment_key('sidebar', [username + x]) for x in LinkShowType.values)
 
     for k in keys:

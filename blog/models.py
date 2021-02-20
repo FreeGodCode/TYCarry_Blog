@@ -2,9 +2,13 @@ from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
-from django.utils import timezone
+# from django.utils import timezone
 from django.utils.translation import gettext_lazy
 from django.utils.timezone import now
+from abc import abstractmethod
+from django.conf import settings
+from Blog.utils import cache_decorator
+from mdeditor.fields import MDTextField
 
 
 # Create your models here.
@@ -222,12 +226,14 @@ class ArticleComment(models.Model):
 #         verbose_name = '菜单栏'
 #         verbose_name_plural = verbose_name
 
-class LinkShowType(models.TextChoices):
-    I = ('i', '首页')
-    L = ('l', '列表页')
-    P = ('p', '文章页面')
-    A = ('a', '全站')
-    S = ('s', '友情链接页面')
+class LinkShowType(models.Model):
+    CHOICES = (
+        ('i', '首页'),
+        ('l', '列表页'),
+        ('p', '文章页面'),
+        ('a', '全站'),
+        ('s', '友情链接页面'),
+    )
 
 
 class BaseModel(models.Model):
@@ -304,7 +310,7 @@ class Article(BaseModel):
                        kwargs={'article_id': self.id, 'year': self.created_time.year, 'month': self.created_time.month,
                                'day': self.created_time.day})
 
-    @cache_decoratoor(60 * 60 * 10)
+    @cache_decorator(60 * 60 * 10)
     def get_category_tree(self):
         tree = self.category.get_category_tree()
         names = list(map(lambda c: (c.name, c.get_absolute_url()), tree))
@@ -339,6 +345,7 @@ class Article(BaseModel):
         """下一篇"""
         return Article.objects.filter(id__gt=self.id, status='p').order_by('id').first()
 
+    from Blog.utils import cache_decorator
     @cache_decorator(expiration=60 * 100)
     def prev_article(self):
         """前一篇"""
@@ -366,6 +373,7 @@ class Category(BaseModel):
     def get_category_tree(self):
         """递归获取分类目录的父级"""
         categorys = []
+
         def parse(category):
             categorys.append(category)
             if category.parent_category:
@@ -378,6 +386,7 @@ class Category(BaseModel):
         """获取当前目录的所有子目录"""
         catetorys = []
         all_categorys = Category.objects.all()
+
         def parse(category):
             if category not in categorys:
                 categorys.append(category)
@@ -407,7 +416,7 @@ class Tag(BaseModel):
 
     class Meta:
         db_table = 'db_tag'
-        ordering = [name]
+        ordering = ['name']
         verbose_name = '标签'
         verbose_name_plural = verbose_name
 
@@ -418,8 +427,7 @@ class Links(models.Model):
     link = models.URLField(verbose_name='链接地址')
     sequence = models.IntegerField(verbose_name='排序', unique=True)
     is_enable = models.BooleanField(verbose_name='是否显示', default=True, blank=False, null=False)
-    show_type = models.CharField(verbose_name='显示类型', max_length=1, choices=LinkShowType.choices,
-                                 default=LinkShowType.I)
+    show_type = models.CharField(verbose_name='显示类型', max_length=1, choices=LinkShowType.CHOICES,default='i')
     created_time = models.DateTimeField(verbose_name='创建时间', default=now)
     last_modify_time = models.DateTimeField(verbose_name='修改时间', default=now)
 

@@ -18,7 +18,7 @@ from comment.utils import send_comment_email
 
 logger = logging.getLogger(__name__)
 
-auth_user_login_signal = django.dispath.Signal(providing_args=['id'])
+oauth_user_login_signal = django.dispatch.Signal(providing_args=['id'])
 send_email_signal = django.dispatch.Signal(providing_args=['emailto', 'title', 'content'])
 
 
@@ -45,7 +45,7 @@ def send_email_signal_handler(sender, **kwargs):
     log.save()
 
 
-@receiver(auth_user_login_signal)
+@receiver(oauth_user_login_signal)
 def oauth_user_login_signal_handler(sender, **kwargs):
     """docstring"""
     id = kwargs['id']

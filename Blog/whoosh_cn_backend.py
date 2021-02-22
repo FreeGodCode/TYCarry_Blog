@@ -16,6 +16,8 @@ from haystack import connections
 from haystack.backends import log_query, EmptyResults, BaseSearchQuery, BaseEngine
 from haystack.backends.whoosh_backend import WhooshSearchBackend
 from haystack.constants import ID, DJANGO_CT, DJANGO_ID
+from jieba.analyse import ChineseAnalyzer
+from whoosh.fields import ID as WHOOSH_ID
 from haystack.exceptions import MissingDependency, SearchBackendError, SkipDocument
 from haystack.inputs import PythonData, Clean, Exact, Raw
 from haystack.models import SearchResult
@@ -25,7 +27,7 @@ from whoosh import index
 from whoosh.analysis import StemmingAnalyzer
 from whoosh.fields import IDLIST, KEYWORD, DATETIME, NUMERIC, BOOLEAN, NGRAM, NGRAMWORDS, TEXT, Schema
 from whoosh.filedb.filestore import FileStorage, RamStorage
-from whoosh.highlight import HtmlFormatter
+from whoosh.highlight import HtmlFormatter, ContextFragmenter
 from whoosh.qparser import QueryParser
 from whoosh.searching import ResultsPage
 from whoosh.writing import AsyncWriter
@@ -51,7 +53,7 @@ class WhooshHtmlFormatter(HtmlFormatter):
     # Word reserved by whoosh for special use.
     RESERVED_WORDS = ('AND', 'NOT', 'OR', 'TO',)
     RESERVED_CHARACTERS = (
-    '\\', '+', '-', '&&', '||', '!', '(', ')', '{', '}', '[', ']', '^', '"', '~', '*', '?', ':', '.',)
+        '\\', '+', '-', '&&', '||', '!', '(', ')', '{', '}', '[', ']', '^', '"', '~', '*', '?', ':', '.',)
 
     def __init__(self, connection_alias, **connection_options):
         """
@@ -111,8 +113,10 @@ class WhooshHtmlFormatter(HtmlFormatter):
 
         self.setup_complete = True
 
+
     def build_schema(self, fields):
         schema_fields = {
+
             ID: WHOOSH_ID(stored=True, unique=True),
             DJANGO_CT: WHOOSH_ID(stored=True),
             DJANGO_ID: WHOOSH_ID(stored=True),
@@ -122,7 +126,7 @@ class WhooshHtmlFormatter(HtmlFormatter):
         for field_name, field_class in fields.items():
             if field_class.is_multivalued:
                 if field_class.indexed is False:
-                    schema_fields[field_class, index_fieldname] = IDLIST(stored=True, field_boost=field_class.boost)
+                    schema_fields[field_class.index_fieldname] = IDLIST(stored=True, field_boost=field_class.boost)
                 else:
                     schema_fields[field_class.index_fieldname] = KEYWORD(stored=True, commas=True, scorable=True,
                                                                          field_boost=field_class.boost)
@@ -146,8 +150,7 @@ class WhooshHtmlFormatter(HtmlFormatter):
                                                                         field_boost=field_class.boost)
             else:
                 # schema_fields[field_class.index_fieldname] = TEXT(stored=True, analyzer=StemmingAnalyzer(), field_boost=field_class.boost, sortable=True)
-                schema_fields[field_class.index_fieldname] = TEXT(stored=True, analyzer=ChineseAnalyzer(),
-                                                                  field_boost=field_class.boost, sortable=True)
+                schema_fields[field_class.index_fieldname] = TEXT(stored=True, analyzer=ChineseAnalyzer(), field_boost=field_class.boost, sortable=True)
             if field_class.document is True:
                 content_field_name = field_class.index_fieldname
                 schema_fields[field_class.index_fieldname].spelling = True
@@ -430,7 +433,7 @@ class WhooshHtmlFormatter(HtmlFormatter):
                 'spelling_suggestion': spelling_suggestion,
             }
 
-    def more_like_this(self, model_indstance, additional_query_string=None, start_offset=0, end_offset=None,
+    def more_like_this(self, model_instance, additional_query_string=None, start_offset=0, end_offset=None,
                        models=None, limit_to_registered_models=None, result_class=None, **kwargs):
         if not self.setup_complete:
             self.setup()
@@ -570,8 +573,9 @@ class WhooshHtmlFormatter(HtmlFormatter):
                     sa = StemmingAnalyzer()
                     formatter = WhooshHtmlFormatter('em')
                     terms = [token.text for token in sa(query_string)]
-
-                    whoosh_result = whoosh_highlight(additional_fields.get(self.content_field_name), terms, sa, ContextFragmenter(), formatter)
+                    from whoosh.highlight import highlight as whoosh_highlight
+                    whoosh_result = whoosh_highlight(additional_fields.get(self.content_field_name), terms, sa,
+                                                     ContextFragmenter(), formatter)
                     additional_fields['highlighted'] = {
                         self.content_field_name: [whoosh_result],
                     }
@@ -695,6 +699,7 @@ class WhooshHtmlFormatter(HtmlFormatter):
             pass
 
         return value
+
 
 class WhooshSearchQuery(BaseSearchQuery):
     def _convert_datetime(self, date):

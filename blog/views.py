@@ -21,9 +21,9 @@ def login(request):
         # 有值的时候赋值,没有取到的时候默认赋空值
         user_name = request.POST.get('username', '')
         pass_word = request.POST.get('password', '')
-        user  = User.objects.filter(username = user_name)
+        user = User.objects.filter(username=user_name)
         if user:
-            user = User.objects.filter(username = user_name)
+            user = User.objects.filter(username=user_name)
             if pass_word == user.password:
                 request.session['IS_LOGIN'] = True
                 request.session['nickname'] = user.nickname
@@ -52,7 +52,7 @@ def register(request):
         nick_name = request.POST.get('nickname', '')
         email = request.POST.get('email', '')
         avatar = request.FILES.get('avatar')
-        if User.objects.filter(username = user_name):
+        if User.objects.filter(username=user_name):
             return render(request, 'blog/register.html', {'error': '用户已存在'})
         if (pass_word_1 != pass_word_2):
             return render(request, 'blog/register.html', {'error': '两次密码输入不一致'})
@@ -67,7 +67,7 @@ def register(request):
             if size[0] != size[1]:
                 img = img.resize((r2, r2), Image.ANTIALIAS)
             r3 = int(r2 / 2)
-            img_circle = Image.new('RGBA', (r3  *2, r3 * 2), (255, 255, 255, 0))
+            img_circle = Image.new('RGBA', (r3 * 2, r3 * 2), (255, 255, 255, 0))
             pima = img.load()
             pimb = img_circle.load()
             r = float(r2 / 2)
@@ -94,9 +94,9 @@ def forget_password(request):
     if request.method == "POST":
         user_name = request.POST.get('username', '')
         email = request.POST.get('email', '')
-        user = User.objects.filter(username = user_name)
+        user = User.objects.filter(username=user_name)
         if user:
-            user = User.objects.filter(username = user_name)
+            user = User.objects.filter(username=user_name)
             if user.email == email:
                 request.session['user_name'] = user_name
                 return render(request, 'blog/reset.html')
@@ -114,7 +114,7 @@ def reset_possword(request):
         user_name = request.session['user_name']
         pass_word_1 = request.POST.get('password_1', '')
         pass_word_2 = request.POST.get('password_2', '')
-        user = User.objects.get(username = user_name)
+        user = User.objects.get(username=user_name)
         if pass_word_1 == pass_word_2:
             user.password = pass_word_1
             user.save()

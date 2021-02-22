@@ -1,18 +1,26 @@
+import _thread
 import logging
 
 import django
+from django.contrib.admin.models import LogEntry
 from django.contrib.auth import user_logged_in, user_logged_out
+from django.core.cache import cache
 from django.core.mail import EmailMultiAlternatives
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from Blog import settings
-from Blog.utils import get_current_site, delete_sidebar_cache
+from Blog.spider_notify import SpiderNotify
+from Blog.utils import get_current_site, delete_sidebar_cache, expire_view_cache
 from auth.models import AuthUser
+from comment.models import Comment
+from comment.utils import send_comment_email
 
 logger = logging.getLogger(__name__)
 
-auth_user_login_signal = django.dispath.Signal(providing_args=['id'])
+oauth_user_login_signal = django.dispatch.Signal(providing_args=['id'])
 send_email_signal = django.dispatch.Signal(providing_args=['emailto', 'title', 'content'])
+
 
 @receiver(send_email_signal)
 def send_email_signal_handler(sender, **kwargs):
@@ -22,7 +30,7 @@ def send_email_signal_handler(sender, **kwargs):
     msg = EmailMultiAlternatives(title, content, from_email=settings.DEFAULT_FROM_EMAIL, to=emailto)
     msg.content_subtype = 'html'
 
-    # from servermanager.models import EmailSendLog
+    from servermanager.models import EmailSendLog
     log = EmailSendLog()
     log.title = title
     log.content = content
@@ -36,14 +44,15 @@ def send_email_signal_handler(sender, **kwargs):
         log.send_result = False
     log.save()
 
-@receiver(auth_user_login_signal)
+
+@receiver(oauth_user_login_signal)
 def oauth_user_login_signal_handler(sender, **kwargs):
     """docstring"""
     id = kwargs['id']
     oauthuser = AuthUser.objects.get(id=id)
     site = get_current_site().domain
     if oauthuser.picture and not oauthuser.picture.find(site) >= 0:
-        from Blog.utils import  save_user_avatar
+        from Blog.utils import save_user_avatar
         oauthuser.picture = save_user_avatar(oauthuser.picture)
         oauthuser.save()
 
@@ -54,16 +63,7 @@ def oauth_user_login_signal_handler(sender, **kwargs):
 
 @receiver(post_save)
 def model_post_save_callback(sender, instance, created, rew, using, update_fields, **kwargs):
-    """
-    :param sender:
-    :param instance:
-    :param created:
-    :param rew:
-    :param using:
-    :param update_fields:
-    :param kwargs:
-    :return:
-    """
+    """"""
     clearcache = False
     if isinstance(instance, LogEntry):
         return
@@ -89,7 +89,7 @@ def model_post_save_callback(sender, instance, created, rew, using, update_field
         comment_cache_key = 'article_comments_{id}'.format(id=instance.article.id)
         cache.delete(comment_cache_key)
         delete_sidebar_cache('article_comments', [str(instance.article.pk)])
-        _thread.start_new(send_comment_email, (instance, ))
+        _thread.start_new(send_comment_email, (instance,))
 
     if clearcache:
         cache.clear()

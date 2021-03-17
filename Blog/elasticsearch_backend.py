@@ -26,7 +26,7 @@ class ElasticSearchBackend(BaseSearchBackend):
     def _get_models(self, iterable):
         """"""
         models = iterable if iterable else Article.objects.all()
-        docs = self.manager.conver_to_doc(models)
+        docs = self.manager.convert_to_doc(models)
         return docs
 
     def _create(self, models):
@@ -44,7 +44,7 @@ class ElasticSearchBackend(BaseSearchBackend):
     def _rebuild(self, models):
         """重构"""
         models = models if models else Article.objects.all()
-        docs = self.manager.conver_to_doc(models)
+        docs = self.manager.convert_to_doc(models)
         self.manager.update_docs(docs)
 
     def update(self, index, iterable, commit=True):
